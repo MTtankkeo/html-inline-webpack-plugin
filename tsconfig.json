@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "ES2022",
+        "target": "ES2015",
+        "strict": true,
+        "moduleResolution": "Node",
+        "declaration": true,
+        "declarationDir": "./dist/types/"
+    }
+}
