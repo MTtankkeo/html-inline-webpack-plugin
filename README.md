@@ -1,4 +1,4 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/777c4d64-64cd-49dd-a338-182354e0f032">
-  <h1>Typescript Playwright Rollup</h1>
+  <img width="200px" src="https://github.com/user-attachments/assets/6f6585eb-6c61-40ad-b644-e0db451834b0">
+  <h1>HTML Inline Webpack Plugin</h1>
 </div>
