@@ -2,6 +2,7 @@ import { Compilation, Compiler, sources } from "webpack";
 import { HTMLElement, parse } from "node-html-parser";
 import { format } from "prettier"
 import path from "path";
+import fs from "fs";
 
 export class HTMLInlineWebpackPlugin {
     constructor(public options: {
@@ -23,16 +24,13 @@ export class HTMLInlineWebpackPlugin {
             throw new Error("A given path of [template] is not an HTML document file format.");
         }
 
-        compiler.hooks.thisCompilation.tap("HTMLInlineWebpackPlugin", (compilation) => {
+        compiler.hooks.compilation.tap("HTMLInlineWebpackPlugin", (compilation) => {
             compilation.hooks.processAssets.tapAsync({
                 name: "HTMLInlineWebpackPlugin",
                 stage: processStage == "OPTIMIZE_INLINE"
                     ? compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
                     : compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
             }, (_, callback) => {
-                const fs = compiler.outputFileSystem;
-                console.assert(fs != null, "Need to output file system in this webpack plugin.");
-
                 fs?.readFile(path.resolve(template), "utf-8", async (err, data) => {
                     if (err) {
                         throw new Error(`Exception while reading files: ${err.message}`);

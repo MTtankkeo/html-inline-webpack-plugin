@@ -1,11 +1,13 @@
 {
     "scripts": {
         "build": "webpack build",
-        "watch": "webpack build --watch"
+        "watch": "webpack build --watch",
+        "serve": "webpack serve"
     },
     "devDependencies": {
         "html-inline-webpack-plugin": "file:..",
         "webpack": "^5.94.0",
-        "webpack-cli": "^5.1.4"
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^5.0.4"
     }
 }
