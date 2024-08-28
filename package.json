@@ -12,5 +12,9 @@
   "devDependencies": {
     "@types/webpack": "^5.28.5",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "node-html-parser": "^6.1.13",
+    "prettier": "^3.3.3"
   }
 }
