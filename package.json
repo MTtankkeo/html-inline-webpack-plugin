@@ -1,21 +1,16 @@
 {
   "name": "html-inline-webpack-plugin",
-  "description": "Hello, World!",
+  "description": "This webpack plugin package is bundling related HTML files by injecting inline tags.",
   "version": "1.0.0-alpha1",
-  "main": "./dist/index.umd.js",
-  "module": "./dist/index.esm.js",
+  "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "type": "commonjs",
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch"
   },
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
-    "rollup": "^4.21.0",
-    "rollup-cli": "^1.0.9",
-    "rollup-plugin-typescript2": "^0.36.0",
-    "terser": "^5.31.6",
+    "@types/webpack": "^5.28.5",
     "typescript": "^5.5.4"
   }
 }
