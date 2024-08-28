@@ -1,4 +1,4 @@
-import { Compilation, Compiler } from "webpack";
+import { Compilation, Compiler, OutputFileSystem, sources } from "webpack";
 import path from "path";
 
 export class HTMLInlineWebpackPlugin {
@@ -25,18 +25,21 @@ export class HTMLInlineWebpackPlugin {
                 stage: processStage == "OPTIMIZE_INLINE"
                     ? compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
                     : compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
-            }, () => {
+            }, (_, callback) => {
                 const fs = compiler.outputFileSystem;
                 console.assert(fs != null, "Need to output file system in this webpack plugin.");
 
-                fs?.readFile(path.resolve(template), "utf-8", (err, content) => {
+                fs?.readFile(path.resolve(template), "utf-8", (err, data) => {
                     if (err) {
                         throw err; // TODO: about it.
                     }
 
                     if (inject) {
-                        this.inject(compilation, content as string);
+                        this.inject(compilation, data as string);
+                        this.output(compilation, filename, data as string);
                     }
+
+                    callback();
                 });
             });
         });
@@ -51,5 +54,9 @@ export class HTMLInlineWebpackPlugin {
         }
 
         return docText;
+    }
+
+    output(compilation: Compilation, filename: string, data: string) {
+        compilation.emitAsset(filename, new sources.RawSource(data));
     }
 }
