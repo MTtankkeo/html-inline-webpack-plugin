@@ -1,8 +1,9 @@
 import { Compilation, Compiler, sources } from "webpack";
-import { HTMLElement, parse } from "node-html-parser";
+import { parse } from "node-html-parser";
 import { format } from "prettier"
 import path from "path";
 import fs from "fs";
+import { AssetInjector, ScriptAssetInjector, StyleAssetInjector } from "../modules/asset_injector";
 
 /** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
 export interface HTMLInlineWebpackPluginOptions {
@@ -11,6 +12,7 @@ export interface HTMLInlineWebpackPluginOptions {
     /** The path of the HTML document that is outputed finally. */
     filename: string;
     inject?: boolean;
+    injectByBlob: boolean;
     inline?: boolean;
     pretty?: boolean;
     processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
@@ -18,16 +20,36 @@ export interface HTMLInlineWebpackPluginOptions {
 
 /** This webpack plugin package is bundling related HTML files by injecting inline tags. */
 export class HTMLInlineWebpackPlugin {
-    constructor(public options: HTMLInlineWebpackPluginOptions) {}
+    private injectors = new Map<string, AssetInjector<any>>();
+
+    constructor(public options: HTMLInlineWebpackPluginOptions) {
+        // TODO: ...
+    }
+
+    applyContext(options: Required<HTMLInlineWebpackPluginOptions>) {
+        this.injectors.set(".js", new ScriptAssetInjector({inline: options.inline}));
+        this.injectors.set(".css", new StyleAssetInjector({inline: options.inline}));
+    }
 
     apply(compiler: Compiler) {
         const mode = compiler.options.mode;
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
         const inject = this.options?.inject ?? true;
+        const injectByBlob = this.options?.injectByBlob ?? true;
         const inline = this.options?.inline ?? mode == "production";
         const pretty = this.options?.pretty ?? false;
-        const processStage = this.options.processStage ?? "OPTIMIZE_INLINE"
+        const processStage = this.options.processStage ?? "OPTIMIZE_INLINE";
+
+        this.applyContext({
+            template: template,
+            filename: filename,
+            inject: inject,
+            injectByBlob: injectByBlob,
+            inline: inline,
+            pretty: pretty,
+            processStage: processStage
+        });
 
         if (inject && path.extname(template) != ".html") {
             throw new Error("A given path of [template] is not an HTML document file format.");
@@ -47,7 +69,7 @@ export class HTMLInlineWebpackPlugin {
                     }
 
                     if (inject) {
-                        const injected = this.inject(compilation, data as string, inline);
+                        const injected = this.inject(compilation, data as string);
                         const resulted = pretty ? await format(injected, {parser: "html"}) : injected;
 
                         this.output(compilation, filename, resulted);
@@ -60,7 +82,7 @@ export class HTMLInlineWebpackPlugin {
     }
 
     /** Inserts the content of assets as inline into a given HTML document in head or body. */
-    inject(compilation: Compilation, docText: string, inline: boolean): string {
+    inject(compilation: Compilation, docText: string): string {
         const document = parse(docText);
         const documentHead = document.getElementsByTagName("head")[0]
                           ?? document.getElementsByTagName("body")[0];
@@ -70,30 +92,10 @@ export class HTMLInlineWebpackPlugin {
         }
 
         for (const asset in compilation.assets) {
-            if (path.extname(asset) == ".js") { // is javascript
-                const source = compilation.assets[asset].source() as string;
-                const script = new HTMLElement("script", {});
-
-                if (inline) {
-                    script.textContent = source;
-                    compilation.deleteAsset(asset);
-                } else {
-                    script.setAttribute("src", asset);
-                }
-
-                documentHead.appendChild(script);
-            } else if (path.extname(asset) == ".css") { // is style sheet about CSS.
-                const source = compilation.assets[asset].source() as string;
-                const styles = new HTMLElement("style", {});
-
-                if (inline) {
-                    styles.textContent = source;
-                    compilation.deleteAsset(asset);
-                } else {
-                    styles.setAttribute("src", asset);
-                }
-
-                documentHead.appendChild(styles);
+            const source = compilation.assets[asset].source() as string;
+            const active = this.injectors.get(path.extname(asset));
+            if (active) {
+                active.perform({compilation, assetName: asset}, documentHead, source);
             }
         }
 
