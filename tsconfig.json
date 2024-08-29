@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "CommonJS",
+        "module": "UMD",
         "target": "ES2022",
         "strict": true,
         "outDir": "./dist",

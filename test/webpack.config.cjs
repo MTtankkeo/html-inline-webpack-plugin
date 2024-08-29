@@ -1,4 +1,4 @@
-const HTMLInlinePlugin = require("html-inline-webpack-plugin").default;
+const HTMLInlinePlugin = require("html-inline-webpack-plugin");
 const CSSExtractPlugin = require("mini-css-extract-plugin");
 
 /** @type {import("webpack").Configuration} */
