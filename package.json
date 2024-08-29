@@ -6,11 +6,16 @@
   "types": "./dist/types/index.d.ts",
   "type": "commonjs",
   "license": "MIT",
+  "repository": "https://github.com/MTtankkeo/html-inline-webpack-plugin",
+  "author": "Dev Ttangkong",
   "keywords": [
     "webpack",
     "webpack-plugin",
     "html",
-    "html-inline"
+    "html-inline",
+    "html-optimization",
+    "html-bundling",
+    "inline-assets"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
