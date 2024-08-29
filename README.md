@@ -36,7 +36,7 @@ npm install html-inline-webpack-plugin --save-dev
 ## And then In webpack.config.js
 ```cjs
 // In webpack.config.js
-const HTMLInlinePlugin = require("html-inline-webpack-plugin").default;
+const HTMLInlinePlugin = require("html-inline-webpack-plugin");
 
 module.exports = {
   // Add an instance of HTMLInlinePlugin to plugins property value.
