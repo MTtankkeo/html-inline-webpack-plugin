@@ -5,6 +5,12 @@
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "type": "commonjs",
+  "keywords": [
+    "webpack",
+    "webpack-plugin",
+    "html",
+    "html-inline"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json --watch"

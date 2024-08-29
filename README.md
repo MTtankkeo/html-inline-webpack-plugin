@@ -5,7 +5,7 @@
         <thead>
           <tr>
             <th>Version</th>
-            <th>v1.0.0-dev1</th>
+            <th>v1.0.0-alpha1</th>
           </tr>
         </tbody>
     </table>
@@ -14,12 +14,15 @@
 # Description
 This webpack plugin package is bundling related HTML files by injecting inline tags.
 
+> [!WARNING]<br>
+> This plugin is not compatible with `webpack-dev-server`. When using this plugin, please ensure that "inline" option is explicitly set to false during development. This option should only be used in production mode.
+
 ## Support Current Status
 | Type | Status | Support |
 | ---- | ------ | ------- |
 | Script | Tested for required dev-enviorment. | ✅ |
-| Styles | Not supported, But i'm developing currently... | 🟧 |
-| Others | Not supported | 🟥 |
+| Styles | Tested for required dev-enviorment. | ✅ |
+| Others | Not supported, but you can to notify to me by GitBub issues. | 🟥 |
 
 # Install by NPM
 To install this package in your project, enter the following command.
@@ -40,3 +43,39 @@ module.exports = {
   plugins: [new HTMLInlinePlugin({...})]
 }
 ```
+
+## How is a bundle transpiled when this plugin applyed?
+The example below demonstrates the simplest of many possible transformations.
+
+### From
+```html
+<!DOCTYPE html>
+<html>
+  <head>...skip</head>
+<body>
+    hello world
+</body>
+</html>
+```
+
+### From
+```html
+<!DOCTYPE html>
+<html>
+<head>...skip</head>
+<body>
+    hello world
+</body>
+</html>
+```
+
+## The Properties of HTMLInlineWebpackPluginOptions
+
+| Name | Description | type |
+| ---- | ----------- | ---- |
+| template | The path of the HTML document to finally insert an assets. | string |
+| filename | The path of the HTML document that is outputed finally. | string |
+| inject | Not ready a comment about this. | boolean |
+| inline | Not ready a comment about this. | boolean |
+| pretty | Not ready a comment about this. | boolean |
+| processStage | Not ready a comment about this. | "OPTIMIZE" \| "OPTIMIZE_INLINE" |

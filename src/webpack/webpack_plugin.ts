@@ -4,15 +4,21 @@ import { format } from "prettier"
 import path from "path";
 import fs from "fs";
 
+/** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
+export interface HTMLInlineWebpackPluginOptions {
+    /** The path of the HTML document to finally insert an assets. */
+    template: string;
+    /** The path of the HTML document that is outputed finally. */
+    filename: string;
+    inject?: boolean;
+    inline?: boolean;
+    pretty?: boolean;
+    processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
+}
+
+/** This webpack plugin package is bundling related HTML files by injecting inline tags. */
 export class HTMLInlineWebpackPlugin {
-    constructor(public options: {
-        template: string;
-        filename: string;
-        inject?: boolean;
-        inline?: boolean;
-        pretty?: boolean;
-        processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
-    }) {}
+    constructor(public options: HTMLInlineWebpackPluginOptions) {}
 
     apply(compiler: Compiler) {
         const mode = compiler.options.mode;
@@ -27,6 +33,7 @@ export class HTMLInlineWebpackPlugin {
             throw new Error("A given path of [template] is not an HTML document file format.");
         }
 
+        // See Also, this processed after all compiled resource files have been bundled.
         compiler.hooks.compilation.tap("HTMLInlineWebpackPlugin", (compilation) => {
             compilation.hooks.processAssets.tapAsync({
                 name: "HTMLInlineWebpackPlugin",
@@ -52,9 +59,15 @@ export class HTMLInlineWebpackPlugin {
         });
     }
 
-    inject(compilation: Compilation, docText: string,  inline: boolean): string {
+    /** Inserts the content of assets as inline into a given HTML document in head or body. */
+    inject(compilation: Compilation, docText: string, inline: boolean): string {
         const document = parse(docText);
-        const documentHead = document.getElementsByTagName("body")[0];
+        const documentHead = document.getElementsByTagName("head")[0]
+                          ?? document.getElementsByTagName("body")[0];
+
+        if (documentHead == null) {
+            throw new Error("Must be exists a node about <head> or <body> into html document.");
+        }
 
         for (const asset in compilation.assets) {
             if (path.extname(asset) == ".js") { // is javascript
@@ -69,12 +82,25 @@ export class HTMLInlineWebpackPlugin {
                 }
 
                 documentHead.appendChild(script);
+            } else if (path.extname(asset) == ".css") { // is style sheet about CSS.
+                const source = compilation.assets[asset].source() as string;
+                const styles = new HTMLElement("style", {});
+
+                if (inline) {
+                    styles.textContent = source;
+                    compilation.deleteAsset(asset);
+                } else {
+                    styles.setAttribute("src", asset);
+                }
+
+                documentHead.appendChild(styles);
             }
         }
 
         return document.outerHTML;
     }
 
+    /** Outputs an asset file by a given filename and file contents. */
     output(compilation: Compilation, filename: string, data: string) {
         compilation.emitAsset(filename, new sources.RawSource(data));
     }
