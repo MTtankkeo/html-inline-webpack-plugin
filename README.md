@@ -49,24 +49,16 @@ The example below demonstrates the simplest of many possible transformations.
 
 ### From
 ```html
-<!DOCTYPE html>
-<html>
-  <head>...skip</head>
-<body>
-    hello world
-</body>
-</html>
+<!-- When using html-webpack-plugin. -->
+<script src="main.js"></script>
 ```
 
 ### From
 ```html
-<!DOCTYPE html>
-<html>
-<head>...skip</head>
-<body>
-    hello world
-</body>
-</html>
+<!-- When using this webpack plugin. -->
+<script>
+  console.log("This contents is into main.js")
+</script>
 ```
 
 ## The Properties of HTMLInlineWebpackPluginOptions
