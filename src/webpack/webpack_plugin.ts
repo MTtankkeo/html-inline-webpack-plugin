@@ -9,6 +9,7 @@ export class HTMLInlineWebpackPlugin {
         template: string;
         filename: string;
         inject?: boolean;
+        inline?: boolean;
         pretty?: boolean;
         processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
     }) {}
@@ -17,6 +18,7 @@ export class HTMLInlineWebpackPlugin {
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
         const inject = this.options?.inject ?? true;
+        const inline = this.options?.inline ?? true;
         const pretty = this.options?.pretty ?? false;
         const processStage = this.options.processStage ?? "OPTIMIZE_INLINE"
 
@@ -37,7 +39,7 @@ export class HTMLInlineWebpackPlugin {
                     }
 
                     if (inject) {
-                        const injected = this.inject(compilation, data as string);
+                        const injected = this.inject(compilation, data as string, inline);
                         const resulted = pretty ? await format(injected, {parser: "html"}) : injected;
 
                         this.output(compilation, filename, resulted);
@@ -49,7 +51,7 @@ export class HTMLInlineWebpackPlugin {
         });
     }
 
-    inject(compilation: Compilation, docText: string): string {
+    inject(compilation: Compilation, docText: string,  inline: boolean): string {
         const document = parse(docText);
         const documentHead = document.getElementsByTagName("head")[0];
 
@@ -57,8 +59,13 @@ export class HTMLInlineWebpackPlugin {
             if (path.extname(asset) == ".js") { // is javascript
                 const source = compilation.assets[asset].source() as string;
                 const script = new HTMLElement("script", {});
-                script.set_content(source);
+
+                inline
+                    ? script.textContent = source
+                    : script.setAttribute("src", asset);
+
                 documentHead.appendChild(script);
+                compilation.deleteAsset(asset);
             }
         }
 
