@@ -15,10 +15,11 @@ export class HTMLInlineWebpackPlugin {
     }) {}
 
     apply(compiler: Compiler) {
+        const mode = compiler.options.mode;
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
         const inject = this.options?.inject ?? true;
-        const inline = this.options?.inline ?? true;
+        const inline = this.options?.inline ?? mode == "production";
         const pretty = this.options?.pretty ?? false;
         const processStage = this.options.processStage ?? "OPTIMIZE_INLINE"
 
@@ -53,7 +54,7 @@ export class HTMLInlineWebpackPlugin {
 
     inject(compilation: Compilation, docText: string,  inline: boolean): string {
         const document = parse(docText);
-        const documentHead = document.getElementsByTagName("head")[0];
+        const documentHead = document.getElementsByTagName("body")[0];
 
         for (const asset in compilation.assets) {
             if (path.extname(asset) == ".js") { // is javascript
