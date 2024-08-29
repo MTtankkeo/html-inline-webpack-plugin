@@ -60,12 +60,14 @@ export class HTMLInlineWebpackPlugin {
                 const source = compilation.assets[asset].source() as string;
                 const script = new HTMLElement("script", {});
 
-                inline
-                    ? script.textContent = source
-                    : script.setAttribute("src", asset);
+                if (inline) {
+                    script.textContent = source;
+                    compilation.deleteAsset(asset);
+                } else {
+                    script.setAttribute("src", asset);
+                }
 
                 documentHead.appendChild(script);
-                compilation.deleteAsset(asset);
             }
         }
 
