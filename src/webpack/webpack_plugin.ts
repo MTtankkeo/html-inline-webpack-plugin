@@ -11,8 +11,28 @@ export interface HTMLInlineWebpackPluginOptions {
     template: string;
     /** The path of the HTML document that is outputed finally. */
     filename: string;
+    /** Whether the assets will ultimately be injected into the given HTML document template. */
     inject?: boolean;
-    // injectByBlob: boolean;
+    /**
+     * Whether it loads and operates asynchronously in the same way as the existing method,
+     * but handles loading data as a blob to avoid re-requesting resources from the server.
+     */
+    injectAsBlob: boolean;
+    /**
+     * Whether to reduce the number of resource requests to the server by injecting
+     * asset content all at once into the document template instead of using
+     * the traditional asynchronous request method.
+     * 
+     * By default, it is set to `true`, but in development mode, it is exceptionally defined as `false`.
+     * 
+     * ```html
+     * <!-- is false. -->
+     * <script src="main.js"></script>
+     * 
+     * <!-- is true. -->
+     * <script>console.log("Hello, World!");</script>
+     * ```
+     */
     inline?: boolean;
     pretty?: boolean;
     processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
@@ -36,8 +56,8 @@ export class HTMLInlineWebpackPlugin {
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
         const inject = this.options?.inject ?? true;
-        // const injectByBlob = this.options?.injectByBlob ?? true;
-        const inline = this.options?.inline ?? mode == "production";
+        const injectAsBlob = this.options?.injectAsBlob ?? false;
+        const inline = this.options?.inline ?? mode == "production"; // by web-dev-server
         const pretty = this.options?.pretty ?? false;
         const processStage = this.options.processStage ?? "OPTIMIZE_INLINE";
 
@@ -45,7 +65,7 @@ export class HTMLInlineWebpackPlugin {
             template: template,
             filename: filename,
             inject: inject,
-            // injectByBlob: injectByBlob,
+            injectAsBlob: injectAsBlob,
             inline: inline,
             pretty: pretty,
             processStage: processStage
@@ -92,6 +112,7 @@ export class HTMLInlineWebpackPlugin {
         }
 
         for (const asset in compilation.assets) {
+            /** To ensure compatibility with webpack-dev-server. */
             if (asset.endsWith("hot-update.js")) {
                 continue;
             }
