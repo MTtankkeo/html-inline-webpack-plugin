@@ -24,6 +24,7 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
         super();
     }
 
+    /** Whether to include asset data within the tag for synchronous data loading. */
     get isInline(): boolean {
         return this.options.inline;
     }
@@ -35,21 +36,33 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
             target.textContent = source;
             context.compilation.deleteAsset(context.assetName);
         } else {
-            target.setAttribute("src", context.assetName);
+            this.setAttribute(context, target);
         }
 
         parent.appendChild(target);
     }
+
+    abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
 
 export class ScriptAssetInjector extends DrivenAssetInjector {
     createElement(): HTMLElement {
         return new HTMLElement("script", {});
     }
+
+    setAttribute(context: AssetInjectorContext, element: HTMLElement): void {
+        element.setAttribute("defer", "");
+        element.setAttribute("src", context.assetName);
+    }
 }
 
 export class StyleAssetInjector extends DrivenAssetInjector {
     createElement(): HTMLElement {
-        return new HTMLElement("style", {});
+        return new HTMLElement("link", {});
+    }
+
+    setAttribute(context: AssetInjectorContext, element: HTMLElement): void {
+        element.setAttribute("href", context.assetName);
+        element.setAttribute("rel", "stylesheet");
     }
 }

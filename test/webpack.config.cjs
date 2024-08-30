@@ -1,10 +1,14 @@
 const HTMLInlinePlugin = require("html-inline-webpack-plugin");
+const HTMLInjectPlugin = require("html-webpack-plugin");
 const CSSExtractPlugin = require("mini-css-extract-plugin");
+
+const BUILD_MODE = process.env["BUILD_MODE"];
 
 /** @type {import("webpack").Configuration} */
 const config = {
-    mode: "production",
+    mode: BUILD_MODE,
     entry: "./src/index.js",
+    devServer: {hot: true},
     module: {
         rules: [
             { // for CSS.
@@ -15,11 +19,17 @@ const config = {
     },
     plugins: [
         new CSSExtractPlugin(),
+        /*
+        new HTMLInjectPlugin({
+            template: "./src/index.html",
+            filename: "index.html",
+        }),
+        */
         new HTMLInlinePlugin({
             template: "./src/index.html",
             filename: "index.html",
             pretty: true,
-        })
+        }),
     ]
 }
 

@@ -12,7 +12,7 @@ export interface HTMLInlineWebpackPluginOptions {
     /** The path of the HTML document that is outputed finally. */
     filename: string;
     inject?: boolean;
-    injectByBlob: boolean;
+    // injectByBlob: boolean;
     inline?: boolean;
     pretty?: boolean;
     processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
@@ -36,7 +36,7 @@ export class HTMLInlineWebpackPlugin {
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
         const inject = this.options?.inject ?? true;
-        const injectByBlob = this.options?.injectByBlob ?? true;
+        // const injectByBlob = this.options?.injectByBlob ?? true;
         const inline = this.options?.inline ?? mode == "production";
         const pretty = this.options?.pretty ?? false;
         const processStage = this.options.processStage ?? "OPTIMIZE_INLINE";
@@ -45,7 +45,7 @@ export class HTMLInlineWebpackPlugin {
             template: template,
             filename: filename,
             inject: inject,
-            injectByBlob: injectByBlob,
+            // injectByBlob: injectByBlob,
             inline: inline,
             pretty: pretty,
             processStage: processStage
@@ -92,6 +92,10 @@ export class HTMLInlineWebpackPlugin {
         }
 
         for (const asset in compilation.assets) {
+            if (asset.endsWith("hot-update.js")) {
+                continue;
+            }
+
             const source = compilation.assets[asset].source() as string;
             const active = this.injectors.get(path.extname(asset));
             if (active) {
