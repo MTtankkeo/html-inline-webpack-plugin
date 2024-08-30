@@ -58,7 +58,7 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
 
 export class StyleAssetInjector extends DrivenAssetInjector {
     createElement(): HTMLElement {
-        return new HTMLElement("link", {});
+        return new HTMLElement(this.isInline ? "style" : "link", {});
     }
 
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void {
