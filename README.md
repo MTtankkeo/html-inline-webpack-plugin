@@ -11,7 +11,7 @@
     </table>
 </div>
 
-# Description
+# Introduction
 This webpack plugin package is bundling related HTML files by injecting inline tags.
 
 > [!WARNING]<br>
