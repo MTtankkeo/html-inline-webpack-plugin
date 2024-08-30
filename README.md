@@ -15,7 +15,7 @@
 This webpack plugin package is bundling related HTML files by injecting inline tags.
 
 > [!WARNING]<br>
-> This plugin is not compatible with `webpack-dev-server`. When using this plugin, please ensure that "inline" option is explicitly set to false during development. This option should only be used in production mode.
+> This plugin is not compatible with `webpack-dev-server` if using "inline" option, please ensure that "inline" option is explicitly set to false during development. This option should only be used in production mode.
 
 ## Support Current Status
 | Type | Status | Support |
