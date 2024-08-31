@@ -121,7 +121,7 @@ export class HTMLInlineWebpackPlugin {
             throw new Error("Must be exists a node about <head> or <body> into html document.");
         }
 
-        /** Insert the head for additional settings about a given information. */
+        /** See Also, This is for additional features in addition to inserting assets. */
         this.headInjectors.forEach(func => func.perform(documentHead));
 
         for (const asset in compilation.assets) {
@@ -133,7 +133,7 @@ export class HTMLInlineWebpackPlugin {
             const source = compilation.assets[asset].source() as string;
             const active = this.assetInjectors.get(path.extname(asset));
             if (active) {
-                active.perform({compilation, assetName: asset}, documentHead, source);
+                active.perform({compilation, assetName: asset, assetSource: source}, documentHead);
             }
         }
 

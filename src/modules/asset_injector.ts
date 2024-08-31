@@ -7,15 +7,16 @@ import { Compilation } from "webpack";
  * 
  * Used by [AssetInjector].
  */
-export interface AssetInjectorContext {
+export interface AssetInjectorContext<T = string> {
     compilation: Compilation;
+    assetSource: T;
     assetName: string;
 }
 
 /** This class provides injecting HTML elements about asset. */
 export abstract class AssetInjector<T> {
-    abstract createElement(): HTMLElement;
-    abstract perform(context: AssetInjectorContext, parent: HTMLElement, source: T): void;
+    abstract createElement(context: AssetInjectorContext<T>): HTMLElement;
+    abstract perform(context: AssetInjectorContext<T>, parent: HTMLElement): void;
 }
 
 /** This class provides injecting HTML elements about asset based on the string. */
@@ -29,11 +30,14 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
         return this.options.inline;
     }
 
-    perform(context: AssetInjectorContext, parent: HTMLElement, source: string): void {
-        const target = this.createElement();
+    perform(context: AssetInjectorContext, parent: HTMLElement): void {
+        const target = this.createElement(context);
 
         if (this.isInline) {
-            target.textContent = source;
+            target.textContent = context.assetSource;
+
+            // A given asset has already been inserted into the document,
+            // so there is no need to output it separately.
             context.compilation.deleteAsset(context.assetName);
         } else {
             this.setAttribute(context, target);

@@ -26,10 +26,12 @@
         get isInline() {
             return this.options.inline;
         }
-        perform(context, parent, source) {
-            const target = this.createElement();
+        perform(context, parent) {
+            const target = this.createElement(context);
             if (this.isInline) {
-                target.textContent = source;
+                target.textContent = context.assetSource;
+                // A given asset has already been inserted into the document,
+                // so there is no need to output it separately.
                 context.compilation.deleteAsset(context.assetName);
             }
             else {

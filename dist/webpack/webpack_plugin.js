@@ -89,7 +89,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (documentHead == null) {
                 throw new Error("Must be exists a node about <head> or <body> into html document.");
             }
-            /** Insert the head for additional settings about a given information. */
+            /** See Also, This is for additional features in addition to inserting assets. */
             this.headInjectors.forEach(func => func.perform(documentHead));
             for (const asset in compilation.assets) {
                 /** To ensure compatibility with webpack-dev-server. */
@@ -99,7 +99,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 const source = compilation.assets[asset].source();
                 const active = this.assetInjectors.get(path_1.default.extname(asset));
                 if (active) {
-                    active.perform({ compilation, assetName: asset }, documentHead, source);
+                    active.perform({ compilation, assetName: asset, assetSource: source }, documentHead);
                 }
             }
             return document.outerHTML;
