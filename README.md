@@ -5,7 +5,7 @@
         <thead>
           <tr>
             <th>Version</th>
-            <th>v1.0.0-alpha5</th>
+            <th>v1.0.0-beta1</th>
           </tr>
         </tbody>
     </table>
@@ -67,6 +67,7 @@ The example below demonstrates the simplest of many possible transformations.
 | ---- | ----------- | ---- |
 | template | The path of the HTML document to finally insert an assets. | string |
 | filename | The path of the HTML document that is outputed finally. | string |
+| favIcon | The path of the favicon.ico file about the HTML document. | string |
 | inject | Whether the assets will ultimately be injected into the given HTML document template. | boolean |
 | injectAsBlob | Whether it loads and operates asynchronously in the same way as the existing method, but handles loading data as a blob to avoid re-requesting resources from the server. | boolean |
 | inline | Whether to reduce the number of resource requests to the server by injecting asset content all at once into the document template instead of using the traditional asynchronous request method. | boolean |

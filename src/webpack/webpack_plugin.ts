@@ -1,9 +1,10 @@
 import { Compilation, Compiler, sources } from "webpack";
 import { parse } from "node-html-parser";
-import { format } from "prettier"
+import { doc, format } from "prettier"
 import path from "path";
 import fs from "fs";
 import { AssetInjector, ScriptAssetInjector, StyleAssetInjector } from "../modules/asset_injector";
+import { FavIconInjector, HeadInjector } from "../modules/head_injector";
 
 /** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
 export interface HTMLInlineWebpackPluginOptions {
@@ -11,6 +12,8 @@ export interface HTMLInlineWebpackPluginOptions {
     template: string;
     /** The path of the HTML document that is outputed finally. */
     filename: string;
+    /** The path of the favicon.ico file about the HTML document. */
+    favIcon?: string;
     /** Whether the assets will ultimately be injected into the given HTML document template. */
     inject?: boolean;
     /**
@@ -40,21 +43,27 @@ export interface HTMLInlineWebpackPluginOptions {
 
 /** This webpack plugin package is bundling related HTML files by injecting inline tags. */
 export class HTMLInlineWebpackPlugin {
-    private injectors = new Map<string, AssetInjector<any>>();
+    private assetInjectors = new Map<string, AssetInjector<any>>();
+    private headInjectors: HeadInjector[] = [];
 
     constructor(public options: HTMLInlineWebpackPluginOptions) {
         // TODO: ...
     }
 
     applyContext(options: Required<HTMLInlineWebpackPluginOptions>) {
-        this.injectors.set(".js", new ScriptAssetInjector({inline: options.inline}));
-        this.injectors.set(".css", new StyleAssetInjector({inline: options.inline}));
+        this.assetInjectors.set(".js", new ScriptAssetInjector({inline: options.inline}));
+        this.assetInjectors.set(".css", new StyleAssetInjector({inline: options.inline}));
+
+        if (options.favIcon != null) {
+            this.headInjectors.push(new FavIconInjector(options.favIcon));
+        }
     }
 
     apply(compiler: Compiler) {
         const mode = compiler.options.mode;
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
+        const favIcon = this.options?.favIcon ?? "";
         const inject = this.options?.inject ?? true;
         const injectAsBlob = this.options?.injectAsBlob ?? false;
         const inline = this.options?.inline ?? mode == "production"; // by web-dev-server
@@ -64,11 +73,12 @@ export class HTMLInlineWebpackPlugin {
         this.applyContext({
             template: template,
             filename: filename,
+            favIcon: favIcon,
             inject: inject,
             injectAsBlob: injectAsBlob,
             inline: inline,
             pretty: pretty,
-            processStage: processStage
+            processStage: processStage,
         });
 
         if (inject && path.extname(template) != ".html") {
@@ -111,6 +121,9 @@ export class HTMLInlineWebpackPlugin {
             throw new Error("Must be exists a node about <head> or <body> into html document.");
         }
 
+        /** Insert the head for additional settings about a given information. */
+        this.headInjectors.forEach(func => func.perform(documentHead));
+
         for (const asset in compilation.assets) {
             /** To ensure compatibility with webpack-dev-server. */
             if (asset.endsWith("hot-update.js")) {
@@ -118,7 +131,7 @@ export class HTMLInlineWebpackPlugin {
             }
 
             const source = compilation.assets[asset].source() as string;
-            const active = this.injectors.get(path.extname(asset));
+            const active = this.assetInjectors.get(path.extname(asset));
             if (active) {
                 active.perform({compilation, assetName: asset}, documentHead, source);
             }
