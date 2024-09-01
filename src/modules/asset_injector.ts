@@ -31,11 +31,14 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
         return this.options.inline;
     }
 
+    abstract createSource(context: AssetInjectorContext): string;
+    abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
+
     perform(context: AssetInjectorContext, parent: HTMLElement): void {
         const target = this.createElement(context);
 
         if (this.isInline) {
-            target.textContent = context.assetSource;
+            target.textContent = this.createSource(context);
 
             // A given asset has already been inserted into the document,
             // so there is no need to output it separately.
@@ -46,14 +49,20 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
 
         parent.appendChild(target);
     }
-
-    abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
 
 /** This class performs injecting HTML element about javascript assets. */
 export class ScriptAssetInjector extends DrivenAssetInjector {
     constructor(public options: {inline: boolean, scriptLoading: HTMLInlineWebpackPluginScriptLoading}) {
         super(options);
+    }
+
+    createSource(context: AssetInjectorContext): string {
+        if (this.options.scriptLoading == "DEFAULT") {
+            return context.assetSource;
+        } else { // is "DEFER" and "ASYNC"
+            return `addEventListener("DOMContentLoaded", () => {${context.assetSource}});`;
+        }
     }
 
     createElement(): HTMLElement {
@@ -73,6 +82,10 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
 
 /** This class performs injecting HTML elements about CSS style sheet assets. */
 export class StyleAssetInjector extends DrivenAssetInjector {
+    createSource(context: AssetInjectorContext): string {
+        return context.assetSource;
+    }
+
     createElement(): HTMLElement {
         return new HTMLElement(this.isInline ? "style" : "link", {});
     }

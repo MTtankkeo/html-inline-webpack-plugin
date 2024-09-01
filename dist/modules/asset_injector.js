@@ -29,7 +29,7 @@
         perform(context, parent) {
             const target = this.createElement(context);
             if (this.isInline) {
-                target.textContent = context.assetSource;
+                target.textContent = this.createSource(context);
                 // A given asset has already been inserted into the document,
                 // so there is no need to output it separately.
                 context.compilation.deleteAsset(context.assetName);
@@ -47,6 +47,14 @@
         constructor(options) {
             super(options);
             this.options = options;
+        }
+        createSource(context) {
+            if (this.options.scriptLoading == "DEFAULT") {
+                return context.assetSource;
+            }
+            else { // is "DEFER" and "ASYNC"
+                return `addEventListener("DOMContentLoaded", () => {${context.assetSource}});`;
+            }
         }
         createElement() {
             return new node_html_parser_1.HTMLElement("script", {});
@@ -67,6 +75,9 @@
     exports.ScriptAssetInjector = ScriptAssetInjector;
     /** This class performs injecting HTML elements about CSS style sheet assets. */
     class StyleAssetInjector extends DrivenAssetInjector {
+        createSource(context) {
+            return context.assetSource;
+        }
         createElement() {
             return new node_html_parser_1.HTMLElement(this.isInline ? "style" : "link", {});
         }

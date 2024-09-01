@@ -17,9 +17,7 @@
     exports.AssetInsertorWithBlob = AssetInsertorWithBlob;
     class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob {
         createBlobSource(context) {
-            return context.assetSource
-                .replaceAll("`", "\\`")
-                .replaceAll("$", "\\$");
+            return context.assetSource.replaceAll("`", "\\`");
         }
         perform(context, parent) {
             parent.appendChild(this.createElement(context));

@@ -8,9 +8,7 @@ export abstract class AssetInsertorWithBlob<T> extends AssetInjector<T> {
 
 export abstract class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob<string> {
     createBlobSource(context: AssetInjectorContext<string>): string {
-        return context.assetSource
-            .replaceAll("`", "\\`")
-            .replaceAll("$", "\\$");
+        return context.assetSource.replaceAll("`", "\\`");
     }
 
     perform(context: AssetInjectorContext, parent: HTMLElement): void {

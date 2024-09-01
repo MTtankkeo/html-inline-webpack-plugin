@@ -27,8 +27,9 @@ export declare abstract class DrivenAssetInjector extends AssetInjector<string> 
     });
     /** Whether to include asset data within the tag for synchronous data loading. */
     get isInline(): boolean;
-    perform(context: AssetInjectorContext, parent: HTMLElement): void;
+    abstract createSource(context: AssetInjectorContext): string;
     abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
+    perform(context: AssetInjectorContext, parent: HTMLElement): void;
 }
 /** This class performs injecting HTML element about javascript assets. */
 export declare class ScriptAssetInjector extends DrivenAssetInjector {
@@ -40,11 +41,13 @@ export declare class ScriptAssetInjector extends DrivenAssetInjector {
         inline: boolean;
         scriptLoading: HTMLInlineWebpackPluginScriptLoading;
     });
+    createSource(context: AssetInjectorContext): string;
     createElement(): HTMLElement;
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
 /** This class performs injecting HTML elements about CSS style sheet assets. */
 export declare class StyleAssetInjector extends DrivenAssetInjector {
+    createSource(context: AssetInjectorContext): string;
     createElement(): HTMLElement;
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
