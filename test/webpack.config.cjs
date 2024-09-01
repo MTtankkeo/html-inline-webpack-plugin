@@ -22,7 +22,8 @@ const config = {
             template: "./src/index.html",
             filename: "index.html",
             injectAsBlob: true,
-            pretty: true,
+            inline: false,
+            // pretty: true
         }),
     ]
 }

@@ -7,7 +7,9 @@ export abstract class AssetInsertorWithBlob<T> extends AssetInjector<T> {
 
 export abstract class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob<string> {
     createBlobSource(context: AssetInjectorContext<string>): string {
-        return context.assetSource.replaceAll("`", "\\`");
+        return context.assetSource
+            .replaceAll("`", "\\`")
+            .replaceAll("$", "\\$");
     }
 
     perform(context: AssetInjectorContext, parent: HTMLElement): void {
@@ -20,7 +22,7 @@ export class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
         const blobSrc = this.createBlobSource(context);
         const element = new HTMLElement("script", {});
         element.textContent = `
-            const blob = new Blob([\`${blobSrc}\`], {type: "application/javascript"});
+            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
             element.setAttribute("src", blobUrl);

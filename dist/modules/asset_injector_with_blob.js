@@ -17,7 +17,9 @@
     exports.AssetInsertorWithBlob = AssetInsertorWithBlob;
     class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob {
         createBlobSource(context) {
-            return context.assetSource.replaceAll("`", "\\`");
+            return context.assetSource
+                .replaceAll("`", "\\`")
+                .replaceAll("$", "\\$");
         }
         perform(context, parent) {
             parent.appendChild(this.createElement(context));
@@ -29,7 +31,7 @@
             const blobSrc = this.createBlobSource(context);
             const element = new node_html_parser_1.HTMLElement("script", {});
             element.textContent = `
-            const blob = new Blob([\`${blobSrc}\`], {type: "application/javascript"});
+            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
             element.setAttribute("src", blobUrl);
