@@ -5,7 +5,7 @@ import path from "path";
 import fs from "fs";
 import { AssetInjector, ScriptAssetInjector, StyleAssetInjector } from "../modules/asset_injector";
 import { FavIconInjector, HeadInjector } from "../modules/head_injector";
-import { ScriptAssetInjectorWithBlob } from "../modules/asset_injector_with_blob";
+import { ScriptAssetInjectorWithBlob, StyleAssetInjectorWithBlob } from "../modules/asset_injector_with_blob";
 import { HTMLInlineWebpackPluginScriptLoading } from "../types";
 
 /** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
@@ -54,12 +54,18 @@ export class HTMLInlineWebpackPlugin {
     }
 
     applyContext(options: Required<HTMLInlineWebpackPluginOptions>) {
-        this.assetInjectors.set(".js", options.injectAsBlob
+        /** Whether asset resource should be inserted in blob form. */
+        const isInjectAsBlob = options.injectAsBlob;
+
+        this.assetInjectors.set(".js", isInjectAsBlob
             ? new ScriptAssetInjectorWithBlob({scriptLoading: options.scriptLoading})
             : new ScriptAssetInjector({inline: options.inline, scriptLoading: options.scriptLoading})
         );
 
-        this.assetInjectors.set(".css", new StyleAssetInjector({inline: options.inline}));
+        this.assetInjectors.set(".css", isInjectAsBlob
+            ? new StyleAssetInjectorWithBlob()
+            : new StyleAssetInjector({inline: options.inline})
+        );
 
         if (options.favIcon != null) {
             this.headInjectors.push(new FavIconInjector(options.favIcon));
@@ -104,14 +110,14 @@ export class HTMLInlineWebpackPlugin {
             }, (_, callback) => {
                 fs?.readFile(path.resolve(template), "utf-8", async (err, data) => {
                     if (err) {
-                        throw new Error(`Exception while reading files: ${err.message}`);
+                        throw new Error(`Exception while reading the file of a given HTML template path: ${err.message}`);
                     }
 
                     if (inject) {
                         const injected = this.inject(compilation, data as string);
-                        const resulted = pretty ? await format(injected, {parser: "html"}) : injected;
+                        const formated = pretty ? await format(injected, {parser: "html"}) : injected;
 
-                        this.output(compilation, filename, resulted);
+                        this.output(compilation, filename, formated);
                     }
 
                     callback();

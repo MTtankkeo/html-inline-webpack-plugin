@@ -27,7 +27,7 @@ export class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
         const blobSrc = this.createBlobSource(context);
         const loading = this.options.scriptLoading;
         const element = new HTMLElement("script", {});
-        element.textContent = `
+        element.textContent = `{
             const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
@@ -40,7 +40,25 @@ export class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
             }
 
             document.head.appendChild(element);
-        `;
+        }`;
+
+        return element;
+    }
+}
+
+export class StyleAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
+    createElement(context: AssetInjectorContext<string>): HTMLElement {
+        const blobSrc = this.createBlobSource(context);
+        const element = new HTMLElement("script", {});
+        element.textContent = `{
+            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "text/css"});
+            const blobUrl = window.URL.createObjectURL(blob);
+            const element = document.createElement("link");
+            element.setAttribute("href", blobUrl);
+            element.setAttribute("rel", "stylesheet");
+
+            document.head.appendChild(element);
+        }`;
 
         return element;
     }

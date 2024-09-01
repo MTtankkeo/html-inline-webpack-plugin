@@ -17,3 +17,6 @@ export declare class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWith
     });
     createElement(context: AssetInjectorContext): HTMLElement;
 }
+export declare class StyleAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
+    createElement(context: AssetInjectorContext<string>): HTMLElement;
+}

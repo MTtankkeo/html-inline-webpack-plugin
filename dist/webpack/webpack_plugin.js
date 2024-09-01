@@ -31,10 +31,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             // TODO: ...
         }
         applyContext(options) {
-            this.assetInjectors.set(".js", options.injectAsBlob
+            /** Whether asset resource should be inserted in blob form. */
+            const isInjectAsBlob = options.injectAsBlob;
+            this.assetInjectors.set(".js", isInjectAsBlob
                 ? new asset_injector_with_blob_1.ScriptAssetInjectorWithBlob({ scriptLoading: options.scriptLoading })
                 : new asset_injector_1.ScriptAssetInjector({ inline: options.inline, scriptLoading: options.scriptLoading }));
-            this.assetInjectors.set(".css", new asset_injector_1.StyleAssetInjector({ inline: options.inline }));
+            this.assetInjectors.set(".css", isInjectAsBlob
+                ? new asset_injector_with_blob_1.StyleAssetInjectorWithBlob()
+                : new asset_injector_1.StyleAssetInjector({ inline: options.inline }));
             if (options.favIcon != null) {
                 this.headInjectors.push(new head_injector_1.FavIconInjector(options.favIcon));
             }
@@ -74,12 +78,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }, (_, callback) => {
                     fs_1.default?.readFile(path_1.default.resolve(template), "utf-8", async (err, data) => {
                         if (err) {
-                            throw new Error(`Exception while reading files: ${err.message}`);
+                            throw new Error(`Exception while reading the file of a given HTML template path: ${err.message}`);
                         }
                         if (inject) {
                             const injected = this.inject(compilation, data);
-                            const resulted = pretty ? await (0, prettier_1.format)(injected, { parser: "html" }) : injected;
-                            this.output(compilation, filename, resulted);
+                            const formated = pretty ? await (0, prettier_1.format)(injected, { parser: "html" }) : injected;
+                            this.output(compilation, filename, formated);
                         }
                         callback();
                     });

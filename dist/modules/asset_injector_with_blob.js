@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ScriptAssetInjectorWithBlob = exports.DrivenAssetInjectorWithBlob = exports.AssetInsertorWithBlob = void 0;
+    exports.StyleAssetInjectorWithBlob = exports.ScriptAssetInjectorWithBlob = exports.DrivenAssetInjectorWithBlob = exports.AssetInsertorWithBlob = void 0;
     const node_html_parser_1 = require("node-html-parser");
     const asset_injector_1 = require("./asset_injector");
     class AssetInsertorWithBlob extends asset_injector_1.AssetInjector {
@@ -36,7 +36,7 @@
             const blobSrc = this.createBlobSource(context);
             const loading = this.options.scriptLoading;
             const element = new node_html_parser_1.HTMLElement("script", {});
-            element.textContent = `
+            element.textContent = `{
             const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
@@ -48,9 +48,26 @@
                 : ``}
 
             document.head.appendChild(element);
-        `;
+        }`;
             return element;
         }
     }
     exports.ScriptAssetInjectorWithBlob = ScriptAssetInjectorWithBlob;
+    class StyleAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
+        createElement(context) {
+            const blobSrc = this.createBlobSource(context);
+            const element = new node_html_parser_1.HTMLElement("script", {});
+            element.textContent = `{
+            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "text/css"});
+            const blobUrl = window.URL.createObjectURL(blob);
+            const element = document.createElement("link");
+            element.setAttribute("href", blobUrl);
+            element.setAttribute("rel", "stylesheet");
+
+            document.head.appendChild(element);
+        }`;
+            return element;
+        }
+    }
+    exports.StyleAssetInjectorWithBlob = StyleAssetInjectorWithBlob;
 });
