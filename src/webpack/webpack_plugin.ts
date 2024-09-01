@@ -69,7 +69,7 @@ export class HTMLInlineWebpackPlugin {
             : new StyleAssetInjector({inline: options.inline})
         );
 
-        if (options.favIcon != null) {
+        if (options.favIcon != "") {
             this.headInjectors.push(new FavIconInjector(options.favIcon));
         }
     }

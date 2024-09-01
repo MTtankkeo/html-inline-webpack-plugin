@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.assetInjectors.set(".css", isInjectAsBlob
                 ? new asset_injector_with_blob_1.StyleAssetInjectorWithBlob()
                 : new asset_injector_1.StyleAssetInjector({ inline: options.inline }));
-            if (options.favIcon != null) {
+            if (options.favIcon != "") {
                 this.headInjectors.push(new head_injector_1.FavIconInjector(options.favIcon));
             }
         }
