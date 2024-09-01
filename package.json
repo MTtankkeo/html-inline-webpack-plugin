@@ -1,7 +1,7 @@
 {
   "name": "html-inline-webpack-plugin",
   "description": "This webpack plugin package is bundling related HTML files by injecting inline tags.",
-  "version": "1.0.0-beta4",
+  "version": "1.0.0-beta5",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "type": "commonjs",
