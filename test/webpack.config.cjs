@@ -21,6 +21,7 @@ const config = {
         new HTMLInlinePlugin({
             template: "./src/index.html",
             filename: "index.html",
+            favIcon: "./src/assets/favicon.svg",
             injectAsBlob: true,
             inline: false,
             pretty: true

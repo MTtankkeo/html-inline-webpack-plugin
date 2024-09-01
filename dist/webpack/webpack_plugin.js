@@ -76,7 +76,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         ? compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
                         : compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
                 }, (_, callback) => {
-                    fs_1.default?.readFile(path_1.default.resolve(template), "utf-8", async (err, data) => {
+                    fs_1.default.readFile(path_1.default.resolve(template), "utf-8", async (err, data) => {
                         if (err) {
                             throw new Error(`Exception while reading the file of a given HTML template path: ${err.message}`);
                         }
@@ -99,7 +99,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 throw new Error("Must be exists a node about <head> or <body> into html document.");
             }
             /** See Also, This is for additional features in addition to inserting assets. */
-            this.headInjectors.forEach(func => func.perform(documentHead));
+            this.headInjectors.forEach(func => func.perform(compilation, documentHead));
             for (const asset in compilation.assets) {
                 /** To ensure compatibility with webpack-dev-server. */
                 if (asset.endsWith("hot-update.js")) {

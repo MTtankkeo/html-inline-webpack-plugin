@@ -108,7 +108,7 @@ export class HTMLInlineWebpackPlugin {
                     ? compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
                     : compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE
             }, (_, callback) => {
-                fs?.readFile(path.resolve(template), "utf-8", async (err, data) => {
+                fs.readFile(path.resolve(template), "utf-8", async (err, data) => {
                     if (err) {
                         throw new Error(`Exception while reading the file of a given HTML template path: ${err.message}`);
                     }
@@ -137,7 +137,7 @@ export class HTMLInlineWebpackPlugin {
         }
 
         /** See Also, This is for additional features in addition to inserting assets. */
-        this.headInjectors.forEach(func => func.perform(documentHead));
+        this.headInjectors.forEach(func => func.perform(compilation, documentHead));
 
         for (const asset in compilation.assets) {
             /** To ensure compatibility with webpack-dev-server. */
