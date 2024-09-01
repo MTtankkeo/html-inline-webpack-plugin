@@ -7,7 +7,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "webpack", "node-html-parser", "prettier", "path", "fs", "../modules/asset_injector", "../modules/head_injector", "../modules/asset_injector_with_blob"], factory);
+        define(["require", "exports", "webpack", "node-html-parser", "prettier", "../modules/asset_injector", "../modules/head_injector", "../modules/asset_injector_with_blob", "path", "fs"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -16,11 +16,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const webpack_1 = require("webpack");
     const node_html_parser_1 = require("node-html-parser");
     const prettier_1 = require("prettier");
-    const path_1 = __importDefault(require("path"));
-    const fs_1 = __importDefault(require("fs"));
     const asset_injector_1 = require("../modules/asset_injector");
     const head_injector_1 = require("../modules/head_injector");
     const asset_injector_with_blob_1 = require("../modules/asset_injector_with_blob");
+    const path_1 = __importDefault(require("path"));
+    const fs_1 = __importDefault(require("fs"));
     /** This webpack plugin package is bundling related HTML files by injecting inline tags. */
     class HTMLInlineWebpackPlugin {
         options;
@@ -49,6 +49,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             const filename = this.options?.filename ?? "index.html"; // output or exit
             const favIcon = this.options?.favIcon ?? "";
             const inject = this.options?.inject ?? true;
+            const injectType = this.options.injectType ?? "HEAD";
             const injectAsBlob = this.options?.injectAsBlob ?? false;
             const inline = this.options?.inline ?? mode == "production"; // by web-dev-server
             const pretty = this.options?.pretty ?? false;
@@ -59,11 +60,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 filename: filename,
                 favIcon: favIcon,
                 inject: inject,
+                injectType: injectType,
                 injectAsBlob: injectAsBlob,
                 inline: inline,
                 pretty: pretty,
                 processStage: processStage,
-                scriptLoading: scriptLoading
+                scriptLoading: scriptLoading,
             });
             if (inject && path_1.default.extname(template) != ".html") {
                 throw new Error("A given path of [template] is not an HTML document file format.");
@@ -81,7 +83,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             throw new Error(`Exception while reading the file of a given HTML template path: ${err.message}`);
                         }
                         if (inject) {
-                            const injected = this.inject(compilation, data);
+                            const injected = this.inject(compilation, data, injectType);
                             const formated = pretty ? await (0, prettier_1.format)(injected, { parser: "html" }) : injected;
                             this.output(compilation, filename, formated);
                         }
@@ -91,15 +93,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             });
         }
         /** Inserts the content of assets as inline into a given HTML document in head or body. */
-        inject(compilation, docText) {
+        inject(compilation, docText, injectType) {
             const document = (0, node_html_parser_1.parse)(docText);
-            const documentHead = document.getElementsByTagName("head")[0]
-                ?? document.getElementsByTagName("body")[0];
-            if (documentHead == null) {
+            const elements = injectType == "HEAD"
+                ? document.getElementsByTagName("head")[0] ?? document.getElementsByTagName("body")[0]
+                : document.getElementsByTagName("body")[0] ?? document.getElementsByTagName("head")[0];
+            if (elements == null) {
                 throw new Error("Must be exists a node about <head> or <body> into html document.");
             }
             /** See Also, This is for additional features in addition to inserting assets. */
-            this.headInjectors.forEach(func => func.perform(compilation, documentHead));
+            this.headInjectors.forEach(func => func.perform(compilation, elements));
             for (const asset in compilation.assets) {
                 /** To ensure compatibility with webpack-dev-server. */
                 if (asset.endsWith("hot-update.js")) {
@@ -108,7 +111,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 const source = compilation.assets[asset].source();
                 const active = this.assetInjectors.get(path_1.default.extname(asset));
                 if (active) {
-                    active.perform({ compilation, assetName: asset, assetSource: source }, documentHead);
+                    active.perform({ compilation, assetName: asset, assetSource: source }, elements);
                 }
             }
             return document.outerHTML;

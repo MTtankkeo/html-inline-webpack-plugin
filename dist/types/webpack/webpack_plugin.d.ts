@@ -1,8 +1,8 @@
 import { Compilation, Compiler } from "webpack";
-import { HTMLInlineWebpackPluginScriptLoading } from "../types";
+import { HTMLInlineWebpackPluginInjectingType, HTMLInlineWebpackPluginScriptLoading } from "../types";
 /** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
 export interface HTMLInlineWebpackPluginOptions {
-    /** The path of the HTML document to finally insert an assets. */
+    /** The path of the HTML document to finally inject an assets. */
     template: string;
     /** The path of the HTML document that is outputed finally. */
     filename: string;
@@ -10,6 +10,8 @@ export interface HTMLInlineWebpackPluginOptions {
     favIcon?: string;
     /** Whether the assets will ultimately be injected into the given HTML document template. */
     inject?: boolean;
+    /** The type of the document element to which you want to inject the assets. */
+    injectType?: HTMLInlineWebpackPluginInjectingType;
     /**
      * Whether it loads and operates asynchronously in the same way as the existing method,
      * but handles loading data as a blob to avoid re-requesting resources from the server.
@@ -44,7 +46,7 @@ export declare class HTMLInlineWebpackPlugin {
     applyContext(options: Required<HTMLInlineWebpackPluginOptions>): void;
     apply(compiler: Compiler): void;
     /** Inserts the content of assets as inline into a given HTML document in head or body. */
-    inject(compilation: Compilation, docText: string): string;
+    inject(compilation: Compilation, docText: string, injectType: HTMLInlineWebpackPluginInjectingType): string;
     /** Outputs an asset file by a given filename and file contents. */
     output(compilation: Compilation, filename: string, data: string): void;
 }

@@ -24,7 +24,7 @@ const config = {
             favIcon: "./src/assets/favicon.svg",
             injectAsBlob: true,
             inline: false,
-            pretty: true
+            pretty: true,
         }),
     ]
 }
