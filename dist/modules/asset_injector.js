@@ -41,6 +41,7 @@
         }
     }
     exports.DrivenAssetInjector = DrivenAssetInjector;
+    /** This class performs injecting HTML element about javascript assets. */
     class ScriptAssetInjector extends DrivenAssetInjector {
         options;
         constructor(options) {
@@ -64,6 +65,7 @@
         }
     }
     exports.ScriptAssetInjector = ScriptAssetInjector;
+    /** This class performs injecting HTML elements about CSS style sheet assets. */
     class StyleAssetInjector extends DrivenAssetInjector {
         createElement() {
             return new node_html_parser_1.HTMLElement(this.isInline ? "style" : "link", {});

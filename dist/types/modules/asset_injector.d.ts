@@ -30,6 +30,7 @@ export declare abstract class DrivenAssetInjector extends AssetInjector<string> 
     perform(context: AssetInjectorContext, parent: HTMLElement): void;
     abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
+/** This class performs injecting HTML element about javascript assets. */
 export declare class ScriptAssetInjector extends DrivenAssetInjector {
     options: {
         inline: boolean;
@@ -42,6 +43,7 @@ export declare class ScriptAssetInjector extends DrivenAssetInjector {
     createElement(): HTMLElement;
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
+/** This class performs injecting HTML elements about CSS style sheet assets. */
 export declare class StyleAssetInjector extends DrivenAssetInjector {
     createElement(): HTMLElement;
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void;

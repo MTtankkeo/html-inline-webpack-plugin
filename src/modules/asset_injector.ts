@@ -50,6 +50,7 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
     abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
 
+/** This class performs injecting HTML element about javascript assets. */
 export class ScriptAssetInjector extends DrivenAssetInjector {
     constructor(public options: {inline: boolean, scriptLoading: HTMLInlineWebpackPluginScriptLoading}) {
         super(options);
@@ -70,6 +71,7 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
     }
 }
 
+/** This class performs injecting HTML elements about CSS style sheet assets. */
 export class StyleAssetInjector extends DrivenAssetInjector {
     createElement(): HTMLElement {
         return new HTMLElement(this.isInline ? "style" : "link", {});

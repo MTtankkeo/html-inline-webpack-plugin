@@ -11,9 +11,14 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.FavIconInjector = exports.HeadInjector = void 0;
     const node_html_parser_1 = require("node-html-parser");
+    /** This class provides the function of injecting an element into the <head> of a given document. */
     class HeadInjector {
     }
     exports.HeadInjector = HeadInjector;
+    /**
+     * This class performs the function of injecting an element that define
+     * the favicon request path of a given html document.
+     */
     class FavIconInjector extends HeadInjector {
         path;
         constructor(path) {
