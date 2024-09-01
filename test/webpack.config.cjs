@@ -21,6 +21,7 @@ const config = {
         new HTMLInlinePlugin({
             template: "./src/index.html",
             filename: "index.html",
+            injectAsBlob: true,
             pretty: true,
         }),
     ]

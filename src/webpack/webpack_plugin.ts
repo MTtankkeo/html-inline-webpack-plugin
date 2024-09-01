@@ -1,10 +1,12 @@
 import { Compilation, Compiler, sources } from "webpack";
 import { parse } from "node-html-parser";
-import { doc, format } from "prettier"
+import { format } from "prettier"
 import path from "path";
 import fs from "fs";
 import { AssetInjector, ScriptAssetInjector, StyleAssetInjector } from "../modules/asset_injector";
 import { FavIconInjector, HeadInjector } from "../modules/head_injector";
+import { ScriptAssetInjectorWithBlob } from "../modules/asset_injector_with_blob";
+import { HTMLInlineWebpackPluginScriptLoading } from "../types";
 
 /** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
 export interface HTMLInlineWebpackPluginOptions {
@@ -39,6 +41,7 @@ export interface HTMLInlineWebpackPluginOptions {
     inline?: boolean;
     pretty?: boolean;
     processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
+    scriptLoading?: HTMLInlineWebpackPluginScriptLoading;
 }
 
 /** This webpack plugin package is bundling related HTML files by injecting inline tags. */
@@ -51,7 +54,11 @@ export class HTMLInlineWebpackPlugin {
     }
 
     applyContext(options: Required<HTMLInlineWebpackPluginOptions>) {
-        this.assetInjectors.set(".js", new ScriptAssetInjector({inline: options.inline}));
+        this.assetInjectors.set(".js", options.injectAsBlob
+            ? new ScriptAssetInjectorWithBlob()
+            : new ScriptAssetInjector({inline: options.inline, scriptLoading: options.scriptLoading})
+        );
+
         this.assetInjectors.set(".css", new StyleAssetInjector({inline: options.inline}));
 
         if (options.favIcon != null) {
@@ -69,6 +76,7 @@ export class HTMLInlineWebpackPlugin {
         const inline = this.options?.inline ?? mode == "production"; // by web-dev-server
         const pretty = this.options?.pretty ?? false;
         const processStage = this.options.processStage ?? "OPTIMIZE_INLINE";
+        const scriptLoading = this.options.scriptLoading ?? "DEFER";
 
         this.applyContext({
             template: template,
@@ -79,6 +87,7 @@ export class HTMLInlineWebpackPlugin {
             inline: inline,
             pretty: pretty,
             processStage: processStage,
+            scriptLoading: scriptLoading
         });
 
         if (inject && path.extname(template) != ".html") {

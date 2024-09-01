@@ -1,5 +1,6 @@
 import { HTMLElement } from "node-html-parser";
 import { Compilation } from "webpack";
+import { HTMLInlineWebpackPluginScriptLoading } from "../types";
 /**
  * Signature for the interface that defines the required information
  * for injecting HTML elements about asset.
@@ -30,6 +31,14 @@ export declare abstract class DrivenAssetInjector extends AssetInjector<string> 
     abstract setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }
 export declare class ScriptAssetInjector extends DrivenAssetInjector {
+    options: {
+        inline: boolean;
+        scriptLoading: HTMLInlineWebpackPluginScriptLoading;
+    };
+    constructor(options: {
+        inline: boolean;
+        scriptLoading: HTMLInlineWebpackPluginScriptLoading;
+    });
     createElement(): HTMLElement;
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void;
 }

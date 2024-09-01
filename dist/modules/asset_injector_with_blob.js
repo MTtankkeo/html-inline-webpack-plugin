@@ -16,14 +16,8 @@
     }
     exports.AssetInsertorWithBlob = AssetInsertorWithBlob;
     class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob {
-        createElement(context) {
-            const blobObj = this.createBlobObject(context);
-            const element = new node_html_parser_1.HTMLElement("script", {}, "");
-            element.textContent = `
-            const blob = ${blobObj};
-            const bUrl = window.URL.createObjectURL(blob);
-        `;
-            return element;
+        createBlobSource(context) {
+            return context.assetSource.replaceAll("`", "\\`");
         }
         perform(context, parent) {
             parent.appendChild(this.createElement(context));
@@ -31,8 +25,19 @@
     }
     exports.DrivenAssetInjectorWithBlob = DrivenAssetInjectorWithBlob;
     class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
-        createBlobObject(context) {
-            return `new Blob([${context.assetSource}], {type: "application/javascript"})`;
+        createElement(context) {
+            const blobSrc = this.createBlobSource(context);
+            const element = new node_html_parser_1.HTMLElement("script", {});
+            element.textContent = `
+            const blob = new Blob([\`${blobSrc}\`], {type: "application/javascript"});
+            const blobUrl = window.URL.createObjectURL(blob);
+            const element = document.createElement("script");
+            element.setAttribute("src", blobUrl);
+            element.setAttribute("defer", "");
+
+            document.head.appendChild(element);
+        `;
+            return element;
         }
     }
     exports.ScriptAssetInjectorWithBlob = ScriptAssetInjectorWithBlob;

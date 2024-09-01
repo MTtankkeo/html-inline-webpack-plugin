@@ -7,7 +7,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "webpack", "node-html-parser", "prettier", "path", "fs", "../modules/asset_injector", "../modules/head_injector"], factory);
+        define(["require", "exports", "webpack", "node-html-parser", "prettier", "path", "fs", "../modules/asset_injector", "../modules/head_injector", "../modules/asset_injector_with_blob"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -20,6 +20,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const fs_1 = __importDefault(require("fs"));
     const asset_injector_1 = require("../modules/asset_injector");
     const head_injector_1 = require("../modules/head_injector");
+    const asset_injector_with_blob_1 = require("../modules/asset_injector_with_blob");
     /** This webpack plugin package is bundling related HTML files by injecting inline tags. */
     class HTMLInlineWebpackPlugin {
         options;
@@ -30,7 +31,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             // TODO: ...
         }
         applyContext(options) {
-            this.assetInjectors.set(".js", new asset_injector_1.ScriptAssetInjector({ inline: options.inline }));
+            this.assetInjectors.set(".js", options.injectAsBlob
+                ? new asset_injector_with_blob_1.ScriptAssetInjectorWithBlob()
+                : new asset_injector_1.ScriptAssetInjector({ inline: options.inline, scriptLoading: options.scriptLoading }));
             this.assetInjectors.set(".css", new asset_injector_1.StyleAssetInjector({ inline: options.inline }));
             if (options.favIcon != null) {
                 this.headInjectors.push(new head_injector_1.FavIconInjector(options.favIcon));
@@ -46,6 +49,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             const inline = this.options?.inline ?? mode == "production"; // by web-dev-server
             const pretty = this.options?.pretty ?? false;
             const processStage = this.options.processStage ?? "OPTIMIZE_INLINE";
+            const scriptLoading = this.options.scriptLoading ?? "DEFER";
             this.applyContext({
                 template: template,
                 filename: filename,
@@ -55,6 +59,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 inline: inline,
                 pretty: pretty,
                 processStage: processStage,
+                scriptLoading: scriptLoading
             });
             if (inject && path_1.default.extname(template) != ".html") {
                 throw new Error("A given path of [template] is not an HTML document file format.");

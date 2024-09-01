@@ -1,4 +1,5 @@
 import { Compilation, Compiler } from "webpack";
+import { HTMLInlineWebpackPluginScriptLoading } from "../types";
 /** Signature for the interface that defines option values of [HTMLInlineWebpackPlugin]. */
 export interface HTMLInlineWebpackPluginOptions {
     /** The path of the HTML document to finally insert an assets. */
@@ -32,6 +33,7 @@ export interface HTMLInlineWebpackPluginOptions {
     inline?: boolean;
     pretty?: boolean;
     processStage?: "OPTIMIZE" | "OPTIMIZE_INLINE";
+    scriptLoading?: HTMLInlineWebpackPluginScriptLoading;
 }
 /** This webpack plugin package is bundling related HTML files by injecting inline tags. */
 export declare class HTMLInlineWebpackPlugin {

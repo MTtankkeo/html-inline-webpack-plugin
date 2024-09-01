@@ -1,5 +1,6 @@
 import { HTMLElement } from "node-html-parser";
 import { Compilation } from "webpack";
+import { HTMLInlineWebpackPluginScriptLoading } from "../types";
 
 /**
  * Signature for the interface that defines the required information
@@ -50,12 +51,21 @@ export abstract class DrivenAssetInjector extends AssetInjector<string> {
 }
 
 export class ScriptAssetInjector extends DrivenAssetInjector {
+    constructor(public options: {inline: boolean, scriptLoading: HTMLInlineWebpackPluginScriptLoading}) {
+        super(options);
+    }
+
     createElement(): HTMLElement {
         return new HTMLElement("script", {});
     }
 
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void {
-        element.setAttribute("defer", "");
+        switch (this.options.scriptLoading) {
+            case "DEFER": element.setAttribute("defer", ""); break;
+            case "ASYNC": element.setAttribute("async", ""); break;
+            case "DEFAULT": break;
+        }
+
         element.setAttribute("src", context.assetName);
     }
 }

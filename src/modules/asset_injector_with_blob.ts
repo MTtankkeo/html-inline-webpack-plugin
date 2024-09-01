@@ -2,19 +2,12 @@ import { HTMLElement } from "node-html-parser";
 import { AssetInjector, AssetInjectorContext } from "./asset_injector";
 
 export abstract class AssetInsertorWithBlob<T> extends AssetInjector<T> {
-    abstract createBlobObject(context: AssetInjectorContext<T>): string;
+    abstract createBlobSource(context: AssetInjectorContext<T>): string;
 }
 
 export abstract class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob<string> {
-    createElement(context: AssetInjectorContext): HTMLElement {
-        const blobObj = this.createBlobObject(context);
-        const element = new HTMLElement("script", {}, "");
-        element.textContent = `
-            const blob = ${blobObj};
-            const bUrl = window.URL.createObjectURL(blob);
-        `;
-
-        return element;
+    createBlobSource(context: AssetInjectorContext<string>): string {
+        return context.assetSource.replaceAll("`", "\\`");
     }
 
     perform(context: AssetInjectorContext, parent: HTMLElement): void {
@@ -23,7 +16,19 @@ export abstract class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob<
 }
 
 export class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
-    createBlobObject(context: AssetInjectorContext): string {
-        return `new Blob([${context.assetSource}], {type: "application/javascript"})`;
+    createElement(context: AssetInjectorContext): HTMLElement {
+        const blobSrc = this.createBlobSource(context);
+        const element = new HTMLElement("script", {});
+        element.textContent = `
+            const blob = new Blob([\`${blobSrc}\`], {type: "application/javascript"});
+            const blobUrl = window.URL.createObjectURL(blob);
+            const element = document.createElement("script");
+            element.setAttribute("src", blobUrl);
+            element.setAttribute("defer", "");
+
+            document.head.appendChild(element);
+        `;
+
+        return element;
     }
 }

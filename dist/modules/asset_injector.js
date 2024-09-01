@@ -42,11 +42,24 @@
     }
     exports.DrivenAssetInjector = DrivenAssetInjector;
     class ScriptAssetInjector extends DrivenAssetInjector {
+        options;
+        constructor(options) {
+            super(options);
+            this.options = options;
+        }
         createElement() {
             return new node_html_parser_1.HTMLElement("script", {});
         }
         setAttribute(context, element) {
-            element.setAttribute("defer", "");
+            switch (this.options.scriptLoading) {
+                case "DEFER":
+                    element.setAttribute("defer", "");
+                    break;
+                case "ASYNC":
+                    element.setAttribute("async", "");
+                    break;
+                case "DEFAULT": break;
+            }
             element.setAttribute("src", context.assetName);
         }
     }
