@@ -29,13 +29,13 @@ export class FavIconInjector extends HeadInjector {
         parent.appendChild(new HTMLElement("link", {}, `rel="shortcut icon" href="${this.assetName}"`));
     }
 
-    performAsset(compilation: Compilation) {
-        fs.readFile(this.path, (err, data) => {
-            if (err) {
-                throw new Error(`Exception while reading the file of a given favicon path: ${err.message}`);
-            }
-
-            compilation.emitAsset(this.assetName, new sources.RawSource(data));
-        });
+    async performAsset(compilation: Compilation) {
+        try {
+            const buffer = fs.readFileSync(this.path);
+            const source = buffer.toString();
+            compilation.emitAsset(this.assetName, new sources.RawSource(source));
+        } catch (err) {
+            throw new Error(`Exception while reading the file of a given favicon path: ${(err as Error).message}`);
+        }
     }
 }

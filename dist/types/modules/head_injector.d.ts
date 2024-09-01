@@ -14,5 +14,5 @@ export declare class FavIconInjector extends HeadInjector {
     /** Gets an output path for a given favicon source path. */
     get assetName(): string;
     perform(compilation: Compilation, parent: HTMLElement): void;
-    performAsset(compilation: Compilation): void;
+    performAsset(compilation: Compilation): Promise<void>;
 }

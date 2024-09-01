@@ -40,13 +40,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             // Settings a favicon path by injecting into HTML template as link.
             parent.appendChild(new node_html_parser_1.HTMLElement("link", {}, `rel="shortcut icon" href="${this.assetName}"`));
         }
-        performAsset(compilation) {
-            fs_1.default.readFile(this.path, (err, data) => {
-                if (err) {
-                    throw new Error(`Exception while reading the file of a given favicon path: ${err.message}`);
-                }
-                compilation.emitAsset(this.assetName, new webpack_1.sources.RawSource(data));
-            });
+        async performAsset(compilation) {
+            try {
+                const buffer = fs_1.default.readFileSync(this.path);
+                const source = buffer.toString();
+                compilation.emitAsset(this.assetName, new webpack_1.sources.RawSource(source));
+            }
+            catch (err) {
+                throw new Error(`Exception while reading the file of a given favicon path: ${err.message}`);
+            }
         }
     }
     exports.FavIconInjector = FavIconInjector;
