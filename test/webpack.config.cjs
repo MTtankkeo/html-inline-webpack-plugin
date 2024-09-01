@@ -23,7 +23,7 @@ const config = {
             filename: "index.html",
             injectAsBlob: true,
             inline: false,
-            // pretty: true
+            pretty: true
         }),
     ]
 }

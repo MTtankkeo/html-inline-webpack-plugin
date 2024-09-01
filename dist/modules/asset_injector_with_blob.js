@@ -27,15 +27,25 @@
     }
     exports.DrivenAssetInjectorWithBlob = DrivenAssetInjectorWithBlob;
     class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
+        options;
+        constructor(options) {
+            super();
+            this.options = options;
+        }
         createElement(context) {
             const blobSrc = this.createBlobSource(context);
+            const loading = this.options.scriptLoading;
             const element = new node_html_parser_1.HTMLElement("script", {});
             element.textContent = `
             const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
             element.setAttribute("src", blobUrl);
-            element.setAttribute("defer", "");
+            ${
+            // To defines an optional attributes about script loading behavior.
+            loading != "DEFAULT"
+                ? `element.setAttribute("${loading == "DEFER" ? "defer" : loading == "ASYNC" ? "async" : ""}", "");`
+                : ``}
 
             document.head.appendChild(element);
         `;

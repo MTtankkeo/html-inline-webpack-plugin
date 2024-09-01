@@ -55,7 +55,7 @@ export class HTMLInlineWebpackPlugin {
 
     applyContext(options: Required<HTMLInlineWebpackPluginOptions>) {
         this.assetInjectors.set(".js", options.injectAsBlob
-            ? new ScriptAssetInjectorWithBlob()
+            ? new ScriptAssetInjectorWithBlob({scriptLoading: options.scriptLoading})
             : new ScriptAssetInjector({inline: options.inline, scriptLoading: options.scriptLoading})
         );
 

@@ -32,7 +32,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         }
         applyContext(options) {
             this.assetInjectors.set(".js", options.injectAsBlob
-                ? new asset_injector_with_blob_1.ScriptAssetInjectorWithBlob()
+                ? new asset_injector_with_blob_1.ScriptAssetInjectorWithBlob({ scriptLoading: options.scriptLoading })
                 : new asset_injector_1.ScriptAssetInjector({ inline: options.inline, scriptLoading: options.scriptLoading }));
             this.assetInjectors.set(".css", new asset_injector_1.StyleAssetInjector({ inline: options.inline }));
             if (options.favIcon != null) {
