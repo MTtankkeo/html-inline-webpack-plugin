@@ -5,7 +5,7 @@
         <thead>
           <tr>
             <th>Version</th>
-            <th>v1.0.0-beta6</th>
+            <th>v1.0.0-beta7</th>
           </tr>
         </tbody>
     </table>
@@ -16,6 +16,8 @@ This webpack plugin package is bundling related HTML files by injecting inline t
 
 > [!WARNING]<br>
 > This plugin is not compatible with `webpack-dev-server` if using "inline" option, please ensure that "inline" option is explicitly set to false during development. This option should only be used in production mode.
+
+> See Also, If you want the change-log by version for this package. refer to [Change Log](CHANGELOG.md) for details.
 
 ## Support Current Status
 | Type | Status | Support |

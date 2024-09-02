@@ -43,8 +43,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         async performAsset(compilation) {
             try {
                 const buffer = fs_1.default.readFileSync(this.path);
-                const source = buffer.toString();
-                compilation.emitAsset(this.assetName, new webpack_1.sources.RawSource(source));
+                compilation.emitAsset(this.assetName, new webpack_1.sources.RawSource(buffer));
             }
             catch (err) {
                 throw new Error(`Exception while reading the file of a given favicon path: ${err.message}`);

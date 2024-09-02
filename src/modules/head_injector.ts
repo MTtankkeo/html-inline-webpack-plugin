@@ -32,8 +32,7 @@ export class FavIconInjector extends HeadInjector {
     async performAsset(compilation: Compilation) {
         try {
             const buffer = fs.readFileSync(this.path);
-            const source = buffer.toString();
-            compilation.emitAsset(this.assetName, new sources.RawSource(source));
+            compilation.emitAsset(this.assetName, new sources.RawSource(buffer));
         } catch (err) {
             throw new Error(`Exception while reading the file of a given favicon path: ${(err as Error).message}`);
         }
