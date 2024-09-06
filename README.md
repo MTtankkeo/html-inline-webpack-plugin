@@ -29,7 +29,7 @@ This webpack plugin package is bundling related HTML files by injecting inline t
 # Install by NPM
 To install this package in your project, enter the following command.
 
-> When you want to update this package, enter npm update animable-js --save in the terminal to run it.
+> When you want to update this package, enter `npm update html-inline-webpack-plugin --save` in the terminal to run it.
 
 ```
 npm install html-inline-webpack-plugin --save-dev
