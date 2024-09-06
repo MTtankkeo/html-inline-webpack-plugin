@@ -69,7 +69,7 @@ The example below demonstrates the simplest of many possible transformations.
 | ---- | ----------- | ---- |
 | template | The path of the HTML document to finally insert an assets. | string |
 | filename | The path of the HTML document that is outputed finally. | string |
-| favIcon? | The path of the favicon.ico file about the HTML document. | string |
+| favicon? | The path of the favicon.ico file about the HTML document. | string |
 | inject? | Whether the assets will ultimately be injected into the given HTML document template. | boolean |
 | injcetType? | The type of the document element to which you want to inject the assets. | "HEAD" \| "BODY" |
 | injectAsBlob? | Whether it loads and operates asynchronously in the same way as the existing method, but handles loading data as a blob to avoid re-requesting resources from the server. | boolean |
