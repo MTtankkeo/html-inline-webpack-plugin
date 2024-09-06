@@ -7,7 +7,7 @@ export interface HTMLInlineWebpackPluginOptions {
     /** The path of the HTML document that is outputed finally. */
     filename: string;
     /** The path of the favicon.ico file about the HTML document. */
-    favIcon?: string;
+    favicon?: string;
     /** Whether the assets will ultimately be injected into the given HTML document template. */
     inject?: boolean;
     /** The type of the document element to which you want to inject the assets. */

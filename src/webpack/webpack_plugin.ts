@@ -15,7 +15,7 @@ export interface HTMLInlineWebpackPluginOptions {
     /** The path of the HTML document that is outputed finally. */
     filename: string;
     /** The path of the favicon.ico file about the HTML document. */
-    favIcon?: string;
+    favicon?: string;
     /** Whether the assets will ultimately be injected into the given HTML document template. */
     inject?: boolean;
     /** The type of the document element to which you want to inject the assets. */
@@ -69,8 +69,8 @@ export class HTMLInlineWebpackPlugin {
             : new StyleAssetInjector({inline: options.inline})
         );
 
-        if (options.favIcon != "") {
-            this.headInjectors.push(new FavIconInjector(options.favIcon));
+        if (options.favicon != "") {
+            this.headInjectors.push(new FavIconInjector(options.favicon));
         }
     }
 
@@ -78,7 +78,7 @@ export class HTMLInlineWebpackPlugin {
         const mode = compiler.options.mode;
         const template = this.options?.template ?? "./src/index.html"; // input or entry
         const filename = this.options?.filename ?? "index.html";       // output or exit
-        const favIcon = this.options?.favIcon ?? "";
+        const favicon = this.options?.favicon ?? "";
         const inject = this.options?.inject ?? true;
         const injectType = this.options.injectType ?? "HEAD";
         const injectAsBlob = this.options?.injectAsBlob ?? false;
@@ -90,7 +90,7 @@ export class HTMLInlineWebpackPlugin {
         this.applyContext({
             template: template,
             filename: filename,
-            favIcon: favIcon,
+            favicon: favicon,
             inject: inject,
             injectType: injectType,
             injectAsBlob: injectAsBlob,
