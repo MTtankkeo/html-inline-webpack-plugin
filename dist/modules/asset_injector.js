@@ -53,7 +53,7 @@
                 return context.assetSource;
             }
             else { // is "DEFER" and "ASYNC"
-                return `addEventListener("DOMContentLoaded", () => {${context.assetSource}});`;
+                return `addEventListener("DOMContentLoaded", function() {${context.assetSource}});`;
             }
         }
         createElement() {

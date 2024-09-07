@@ -61,7 +61,7 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
         if (this.options.scriptLoading == "DEFAULT") {
             return context.assetSource;
         } else { // is "DEFER" and "ASYNC"
-            return `addEventListener("DOMContentLoaded", () => {${context.assetSource}});`;
+            return `addEventListener("DOMContentLoaded", function() {${context.assetSource}});`;
         }
     }
 

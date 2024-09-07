@@ -1,6 +1,7 @@
 import { HTMLElement } from "node-html-parser";
 import { AssetInjector, AssetInjectorContext } from "./asset_injector";
 import { HTMLInlineWebpackPluginScriptLoading } from "../types";
+import { StringUtil } from "../utils/string";
 
 export abstract class AssetInsertorWithBlob<T> extends AssetInjector<T> {
     abstract createBlobSource(context: AssetInjectorContext<T>): string;
@@ -8,7 +9,7 @@ export abstract class AssetInsertorWithBlob<T> extends AssetInjector<T> {
 
 export abstract class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob<string> {
     createBlobSource(context: AssetInjectorContext<string>): string {
-        return context.assetSource.replaceAll("`", "\\`");
+        return StringUtil.rawStringOf(context.assetSource);
     }
 
     perform(context: AssetInjectorContext, parent: HTMLElement): void {
@@ -26,7 +27,7 @@ export class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
         const loading = this.options.scriptLoading;
         const element = new HTMLElement("script", {});
         element.textContent = `{
-            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
+            const blob = new Blob([${blobSrc}], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
             element.setAttribute("src", blobUrl);
@@ -49,7 +50,7 @@ export class StyleAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
         const blobSrc = this.createBlobSource(context);
         const element = new HTMLElement("script", {});
         element.textContent = `{
-            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "text/css"});
+            const blob = new Blob([${blobSrc}], {type: "text/css"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("link");
             element.setAttribute("href", blobUrl);

@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "node-html-parser", "./asset_injector"], factory);
+        define(["require", "exports", "node-html-parser", "./asset_injector", "../utils/string"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,12 +12,13 @@
     exports.StyleAssetInjectorWithBlob = exports.ScriptAssetInjectorWithBlob = exports.DrivenAssetInjectorWithBlob = exports.AssetInsertorWithBlob = void 0;
     const node_html_parser_1 = require("node-html-parser");
     const asset_injector_1 = require("./asset_injector");
+    const string_1 = require("../utils/string");
     class AssetInsertorWithBlob extends asset_injector_1.AssetInjector {
     }
     exports.AssetInsertorWithBlob = AssetInsertorWithBlob;
     class DrivenAssetInjectorWithBlob extends AssetInsertorWithBlob {
         createBlobSource(context) {
-            return context.assetSource.replaceAll("`", "\\`");
+            return string_1.StringUtil.rawStringOf(context.assetSource);
         }
         perform(context, parent) {
             parent.appendChild(this.createElement(context));
@@ -35,7 +36,7 @@
             const loading = this.options.scriptLoading;
             const element = new node_html_parser_1.HTMLElement("script", {});
             element.textContent = `{
-            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "application/javascript"});
+            const blob = new Blob([${blobSrc}], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
             element.setAttribute("src", blobUrl);
@@ -56,7 +57,7 @@
             const blobSrc = this.createBlobSource(context);
             const element = new node_html_parser_1.HTMLElement("script", {});
             element.textContent = `{
-            const blob = new Blob([String.raw\`${blobSrc}\`], {type: "text/css"});
+            const blob = new Blob([${blobSrc}], {type: "text/css"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("link");
             element.setAttribute("href", blobUrl);
