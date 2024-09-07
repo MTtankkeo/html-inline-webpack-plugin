@@ -61,7 +61,21 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
         if (this.options.scriptLoading == "DEFAULT") {
             return context.assetSource;
         } else { // is "DEFER" and "ASYNC"
-            return `addEventListener("DOMContentLoaded", function() {${context.assetSource}});`;
+            return `{
+                let __LISTENER__;
+                addEventListener("DOMContentLoaded", __LISTENER__ = function() {
+                    ${context.assetSource}
+
+                    // Remove previous registered existing callback function.
+                    removeEventListener("DOMContentLoaded", __LISTENER__);
+
+                    // Since 'DOMContentLoaded' has already been called, any related callback functions registered
+                    // afterwards may not be properly executed according to the existing document flow.
+                    //
+                    // Therefore, the event needs to be artificially triggered again.
+                    dispatchEvent(new Event("DOMContentLoaded"));
+                });
+            }`;
         }
     }
 
