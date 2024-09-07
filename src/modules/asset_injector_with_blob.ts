@@ -23,20 +23,27 @@ export class ScriptAssetInjectorWithBlob extends DrivenAssetInjectorWithBlob {
     }
 
     createElement(context: AssetInjectorContext): HTMLElement {
-        const blobSrc = this.createBlobSource(context);
         const loading = this.options.scriptLoading;
+        if (loading != "DEFAULT") {
+            context.assetSource = `
+                ${context.assetSource}
+
+                // Since 'DOMContentLoaded' has already been called, any related callback functions registered
+                // afterwards may not be properly executed according to the existing document flow.
+                //
+                // Therefore, the event needs to be artificially triggered again.
+                dispatchEvent(new Event("DOMContentLoaded"));
+            `;
+        }
+
         const element = new HTMLElement("script", {});
+        const blobSrc = this.createBlobSource(context);
+
         element.textContent = `{
             const blob = new Blob([${blobSrc}], {type: "application/javascript"});
             const blobUrl = window.URL.createObjectURL(blob);
             const element = document.createElement("script");
             element.setAttribute("src", blobUrl);
-            ${
-                // To defines an optional attributes about script loading behavior.
-                loading != "DEFAULT"
-                    ? `element.setAttribute("${loading == "DEFER" ? "defer" : loading == "ASYNC" ? "async" : ""}", "");`
-                    : ``
-            }
 
             document.head.appendChild(element);
         }`;

@@ -11,11 +11,12 @@ export class StringUtil {
 
     static rawLiteralOf(str: string): string {
         return str
+            .replaceAll("\\", "\\\\")
             .replaceAll("\`", "\\`")
             .replaceAll("${", "\\${");
     }
 
     static rawStringOf(str: string): string {
-        return `String.raw\`${this.rawLiteralOf(str)}\``;
+        return `\`${this.rawLiteralOf(str)}\``;
     }
 }
