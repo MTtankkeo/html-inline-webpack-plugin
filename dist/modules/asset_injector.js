@@ -4,13 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "node-html-parser"], factory);
+        define(["require", "exports", "node-html-parser", "../utils/script"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StyleAssetInjector = exports.ScriptAssetInjector = exports.DrivenAssetInjector = exports.AssetInjector = void 0;
     const node_html_parser_1 = require("node-html-parser");
+    const script_1 = require("../utils/script");
     /** This class provides injecting HTML elements about asset. */
     class AssetInjector {
     }
@@ -52,22 +53,10 @@
             if (this.options.scriptLoading == "DEFAULT") {
                 return context.assetSource;
             }
-            else { // is "DEFER" and "ASYNC"
-                return `{
-                let __LISTENER__;
-                addEventListener("DOMContentLoaded", __LISTENER__ = function() {
-                    ${context.assetSource}
-
-                    // Remove previous registered existing callback function.
-                    removeEventListener("DOMContentLoaded", __LISTENER__);
-
-                    // Since 'DOMContentLoaded' has already been called, any related callback functions registered
-                    // afterwards may not be properly executed according to the existing document flow.
-                    //
-                    // Therefore, the event needs to be artificially triggered again.
-                    dispatchEvent(new Event("DOMContentLoaded"));
-                });
-            }`;
+            else {
+                return this.options.scriptLoading == "DEFER"
+                    ? script_1.ScriptUtil.addEventListenerOf("DOMContentLoaded", context.assetSource)
+                    : script_1.ScriptUtil.addEventListenerOf("load", context.assetSource);
             }
         }
         createElement() {
@@ -78,8 +67,8 @@
                 case "DEFER":
                     element.setAttribute("defer", "");
                     break;
-                case "ASYNC":
-                    element.setAttribute("async", "");
+                case "LOADED":
+                    element.setAttribute("defer", "");
                     break;
                 case "DEFAULT": break;
             }

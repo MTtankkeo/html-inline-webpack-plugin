@@ -5,7 +5,7 @@
         <thead>
           <tr>
             <th>Version</th>
-            <th>v1.0.0-beta8</th>
+            <th>v1.0.0</th>
           </tr>
         </tbody>
     </table>
@@ -52,14 +52,18 @@ The example below demonstrates the simplest of many possible transformations.
 ### From
 ```html
 <!-- When using html-webpack-plugin. -->
-<script src="main.js"></script>
+<script src="main.js" defer></script>
 ```
 
 ### From
+But in reality, Additional code is inserted to address potential issues that may arise during the process of converting script into an inline format.
+
+Therefore this is just a very simple example.
+
 ```html
-<!-- When using this webpack plugin. -->
+<!-- When using this webpack plugin. (This example is a lot of omitted) -->
 <script>
-  console.log("This contents is into main.js")
+  addEventListener("DOMContentLoaded", () => console.log("This contents is into main.js"));
 </script>
 ```
 
@@ -76,4 +80,4 @@ The example below demonstrates the simplest of many possible transformations.
 | inline? | Whether to reduce the number of resource requests to the server by injecting asset content all at once into the document template instead of using the traditional asynchronous request method. | boolean |
 | pretty? | Not ready a comment about this. | boolean |
 | processStage? | Not ready a comment about this. | "OPTIMIZE" \| "OPTIMIZE_INLINE" |
-| scriptLoading? | Not ready a comment about this. | "DEFAULT" \| "ASYNC" \| "DEFER" |
+| scriptLoading? | Not ready a comment about this. | "DEFAULT" \| "LOADED" \| "DEFER" |

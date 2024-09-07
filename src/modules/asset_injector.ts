@@ -1,6 +1,7 @@
 import { HTMLElement } from "node-html-parser";
 import { Compilation } from "webpack";
 import { HTMLInlineWebpackPluginScriptLoading } from "../types";
+import { ScriptUtil } from "../utils/script";
 
 /**
  * Signature for the interface that defines the required information
@@ -60,22 +61,10 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
     createSource(context: AssetInjectorContext): string {
         if (this.options.scriptLoading == "DEFAULT") {
             return context.assetSource;
-        } else { // is "DEFER" and "ASYNC"
-            return `{
-                let __LISTENER__;
-                addEventListener("DOMContentLoaded", __LISTENER__ = function() {
-                    ${context.assetSource}
-
-                    // Remove previous registered existing callback function.
-                    removeEventListener("DOMContentLoaded", __LISTENER__);
-
-                    // Since 'DOMContentLoaded' has already been called, any related callback functions registered
-                    // afterwards may not be properly executed according to the existing document flow.
-                    //
-                    // Therefore, the event needs to be artificially triggered again.
-                    dispatchEvent(new Event("DOMContentLoaded"));
-                });
-            }`;
+        } else {
+            return this.options.scriptLoading == "DEFER"
+                ? ScriptUtil.addEventListenerOf("DOMContentLoaded", context.assetSource)
+                : ScriptUtil.addEventListenerOf("load", context.assetSource);
         }
     }
 
@@ -86,7 +75,7 @@ export class ScriptAssetInjector extends DrivenAssetInjector {
     setAttribute(context: AssetInjectorContext, element: HTMLElement): void {
         switch (this.options.scriptLoading) {
             case "DEFER": element.setAttribute("defer", ""); break;
-            case "ASYNC": element.setAttribute("async", ""); break;
+            case "LOADED": element.setAttribute("defer", ""); break;
             case "DEFAULT": break;
         }
 
